@@ -12,14 +12,9 @@
 // Game-related State data
 SpriteRenderer  *Renderer;
 GameObject      *Player;
-// 初始化球的速度
-const glm::vec2 INITIAL_BALL_VELOCITY(100.0f, -350.0f);
-// 球的半径
-const GLfloat BALL_RADIUS = 12.5f;
-
 BallObject     *Ball;
-
-GLboolean CheckCollision(BallObject &one, GameObject &two) // AABB - Circle collision
+Direction VectorDirection(glm::vec2 target);
+Collision CheckCollision(BallObject &one, GameObject &two) // AABB - Circle collision
 {
     // 获取圆的中心
     glm::vec2 center(one.Position + one.Radius);
@@ -36,7 +31,12 @@ GLboolean CheckCollision(BallObject &one, GameObject &two) // AABB - Circle coll
     glm::vec2 closest = aabb_center + clamped;
     // 获得圆心center和最近点closest的矢量并判断是否 length <= radius
     difference = closest - center;
-    return glm::length(difference) < one.Radius;
+    
+    if (glm::length(difference) <= one.Radius)
+        return std::make_tuple(GL_TRUE, VectorDirection(difference), difference);
+    else
+        return std::make_tuple(GL_FALSE, UP, glm::vec2(0, 0));
+//    return glm::length(difference) < one.Radius;
 }
 
 Game::Game(GLuint width, GLuint height)
@@ -148,17 +148,107 @@ void Game::Render()
     }
 }
 
+void Game::ResetLevel()
+{
+    if (this->Level == 0)this->Levels[0].Load("levels/one.lvl", this->Width, this->Height * 0.5f);
+    else if (this->Level == 1)
+        this->Levels[1].Load("levels/two.lvl", this->Width, this->Height * 0.5f);
+    else if (this->Level == 2)
+        this->Levels[2].Load("levels/three.lvl", this->Width, this->Height * 0.5f);
+    else if (this->Level == 3)
+        this->Levels[3].Load("levels/four.lvl", this->Width, this->Height * 0.5f);
+}
+
+void Game::ResetPlayer()
+{
+    // Reset player/ball stats
+    Player->Size = PLAYER_SIZE;
+    Player->Position = glm::vec2(this->Width / 2 - PLAYER_SIZE.x / 2, this->Height - PLAYER_SIZE.y);
+    Ball->Reset(Player->Position + glm::vec2(PLAYER_SIZE.x / 2 - BALL_RADIUS, -(BALL_RADIUS * 2)), INITIAL_BALL_VELOCITY);
+}
+
+
+
+
+// Collision detection
+GLboolean CheckCollision(GameObject &one, GameObject &two);
+Collision CheckCollision(BallObject &one, GameObject &two);
+Direction VectorDirection(glm::vec2 closest);
+
+
 void Game::DoCollisions()
 {
     for (GameObject &box : this->Levels[this->Level].Bricks)
     {
         if (!box.Destroyed)
         {
-            if (CheckCollision(*Ball, box))
+            Collision collision = CheckCollision(*Ball, box);
+            if (std::get<0>(collision)) // 如果collision 是 true
             {
+                // 如果砖块不是实心就销毁砖块
                 if (!box.IsSolid)
                     box.Destroyed = GL_TRUE;
+                // 碰撞处理
+                Direction dir = std::get<1>(collision);
+                glm::vec2 diff_vector = std::get<2>(collision);
+                if (dir == LEFT || dir == RIGHT) // 水平方向碰撞
+                {
+                    Ball->Velocity.x = -Ball->Velocity.x; // 反转水平速度
+                    // 重定位
+                    GLfloat penetration = Ball->Radius - std::abs(diff_vector.x);
+                    if (dir == LEFT)
+                        Ball->Position.x += penetration; // 将球右移
+                    else
+                        Ball->Position.x -= penetration; // 将球左移
+                }
+                else // 垂直方向碰撞
+                {
+                    Ball->Velocity.y = -Ball->Velocity.y; // 反转垂直速度
+                    // 重定位
+                    GLfloat penetration = Ball->Radius - std::abs(diff_vector.y);
+                    if (dir == UP)
+                        Ball->Position.y -= penetration; // 将球上移
+                    else
+                        Ball->Position.y += penetration; // 将球下移
+                }
             }
         }
     }
+    Collision result = CheckCollision(*Ball, *Player);
+    if (!Ball->Stuck && std::get<0>(result))
+    {
+        // 检查碰到了挡板的哪个位置，并根据碰到哪个位置来改变速度
+        GLfloat centerBoard = Player->Position.x + Player->Size.x / 2;
+        GLfloat distance = (Ball->Position.x + Ball->Radius) - centerBoard;
+        GLfloat percentage = distance / (Player->Size.x / 2);
+        // 依据结果移动
+        GLfloat strength = 2.0f;
+        glm::vec2 oldVelocity = Ball->Velocity;
+        Ball->Velocity.x = INITIAL_BALL_VELOCITY.x * percentage * strength;
+        //Ball->Velocity.y = -Ball->Velocity.y;
+        Ball->Velocity.y = -1 * abs(Ball->Velocity.y);
+        Ball->Velocity = glm::normalize(Ball->Velocity) * glm::length(oldVelocity);
+    }
 }
+
+Direction VectorDirection(glm::vec2 target)
+{
+    glm::vec2 compass[] = {
+        glm::vec2(0.0f, 1.0f),  // 上
+        glm::vec2(1.0f, 0.0f),  // 右
+        glm::vec2(0.0f, -1.0f), // 下
+        glm::vec2(-1.0f, 0.0f)  // 左
+    };
+    GLfloat max = 0.0f;
+    GLuint best_match = -1;
+    for (GLuint i = 0; i < 4; i++)
+    {
+        GLfloat dot_product = glm::dot(glm::normalize(target), compass[i]);
+        if (dot_product > max)
+        {
+            max = dot_product;
+            best_match = i;
+        }
+    }
+    return (Direction)best_match;
+}    
