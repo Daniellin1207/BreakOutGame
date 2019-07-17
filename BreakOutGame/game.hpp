@@ -16,6 +16,8 @@
 #include "game_level.hpp"
 #include "ball_object_collisions.hpp"
 #include "particle_generator.hpp"
+#include "post_processor.hpp"
+#include "power_up.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -62,6 +64,10 @@ public:
     std::vector<GameLevel> Levels;
     GLuint                 Level;
     
+    std::vector<PowerUp>  PowerUps;
+    
+    void SpawnPowerUps(GameObject &block);
+    void UpdatePowerUps(GLfloat dt);
     
     // Constructor/Destructor
     Game(GLuint width, GLuint height);
