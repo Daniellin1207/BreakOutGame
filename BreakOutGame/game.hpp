@@ -15,6 +15,7 @@
 #include "sprite_renderer.hpp"
 #include "game_level.hpp"
 #include "ball_object_collisions.hpp"
+#include "particle_generator.hpp"
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>

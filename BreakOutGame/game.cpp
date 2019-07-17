@@ -13,10 +13,12 @@
 SpriteRenderer  *Renderer;
 GameObject      *Player;
 BallObject     *Ball;
+ParticleGenerator     *Particles;
+
 Direction VectorDirection(glm::vec2 target);
 Collision CheckCollision(BallObject &one, GameObject &two) // AABB - Circle collision
 {
-    // 获取圆的中心
+    // 获取圆的中心 // one.Position 是one对象的左上角
     glm::vec2 center(one.Position + one.Radius);
     // 计算AABB的信息（中心、半边长）
     glm::vec2 aabb_half_extents(two.Size.x / 2, two.Size.y / 2);
@@ -49,6 +51,8 @@ Game::~Game()
 {
     delete Renderer;
     delete Player;
+    delete Ball;
+    delete Particles;
 }
 
 void Game::Init()
@@ -58,10 +62,14 @@ void Game::Init()
     ResourceManager::LoadShader("/Users/daniel/CodeManager/BreakOutGame/BreakOutGame/shaders/sprite.vs",
                                 "/Users/daniel/CodeManager/BreakOutGame/BreakOutGame/shaders/sprite.frag",
                                 nullptr, "sprite");
+    ResourceManager::LoadShader("/Users/daniel/CodeManager/BreakOutGame/BreakOutGame/shaders/particle.vs",
+                                "/Users/daniel/CodeManager/BreakOutGame/BreakOutGame/shaders/particle.frag", nullptr, "particle");
     // Configure shaders
     glm::mat4 projection = glm::ortho(0.0f, static_cast<GLfloat>(this->Width), static_cast<GLfloat>(this->Height), 0.0f, -1.0f, 1.0f);
     ResourceManager::GetShader("sprite").Use().SetInteger("image", 0);
     ResourceManager::GetShader("sprite").SetMatrix4("projection", projection);
+    ResourceManager::GetShader("particle").Use().SetInteger("sprite", 0);
+    ResourceManager::GetShader("particle").SetMatrix4("projection", projection);
     // Load textures
     ResourceManager::LoadTexture("/Users/daniel/CodeManager/BreakOutGame/BreakOutGame/awesomeface.png", GL_TRUE, "face");
     // Set render-specific controls
@@ -73,6 +81,8 @@ void Game::Init()
     ResourceManager::LoadTexture("/Users/daniel/CodeManager/BreakOutGame/BreakOutGame/textures/block.png", GL_FALSE, "block");
     ResourceManager::LoadTexture("/Users/daniel/CodeManager/BreakOutGame/BreakOutGame/textures/block_solid.png", GL_FALSE, "block_solid");
     ResourceManager::LoadTexture("/Users/daniel/CodeManager/BreakOutGame/BreakOutGame/textures/paddle.png", GL_TRUE, "paddle");
+    
+    ResourceManager::LoadTexture("/Users/daniel/CodeManager/BreakOutGame/BreakOutGame/textures/particle.png", GL_TRUE, "particle");
     // 加载关卡
     GameLevel one; one.Load("/Users/daniel/CodeManager/BreakOutGame/BreakOutGame/levels/one.lvl", this->Width, this->Height * 0.5);
     GameLevel two; two.Load("/Users/daniel/CodeManager/BreakOutGame/BreakOutGame/levels/two.lvl", this->Width, this->Height * 0.5);
@@ -90,6 +100,11 @@ void Game::Init()
     glm::vec2 ballPos = playerPos + glm::vec2(PLAYER_SIZE.x / 2 - BALL_RADIUS, -BALL_RADIUS * 2);
     Ball = new BallObject(ballPos, BALL_RADIUS, INITIAL_BALL_VELOCITY,
                           ResourceManager::GetTexture("face"));
+    Particles = new ParticleGenerator(
+                                      ResourceManager::GetShader("particle"),
+                                      ResourceManager::GetTexture("particle"),
+                                      500
+                                      );
 }
 
 void Game::Update(GLfloat dt)
@@ -97,6 +112,15 @@ void Game::Update(GLfloat dt)
     Ball->Move(dt, this->Width);
     // 检测碰撞
     this->DoCollisions();
+    
+    if (Ball->Position.y >= this->Height) // 球是否接触底部边界？
+    {
+        this->ResetLevel();
+        this->ResetPlayer();
+    }
+    
+    Particles->Update(dt, *Ball, 2, glm::vec2(Ball->Radius / 2));
+    
 }
 
 
@@ -142,6 +166,8 @@ void Game::Render()
         // 绘制关卡
         this->Levels[this->Level].Draw(*Renderer);
         // Draw player
+        
+        Particles->Draw();
         Player->Draw(*Renderer);
         
         Ball->Draw(*Renderer);
@@ -150,13 +176,14 @@ void Game::Render()
 
 void Game::ResetLevel()
 {
-    if (this->Level == 0)this->Levels[0].Load("levels/one.lvl", this->Width, this->Height * 0.5f);
+    if (this->Level == 0)
+        this->Levels[0].Load("/Users/daniel/CodeManager/BreakOutGame/BreakOutGame/levels/one.lvl", this->Width, this->Height * 0.5f);
     else if (this->Level == 1)
-        this->Levels[1].Load("levels/two.lvl", this->Width, this->Height * 0.5f);
+        this->Levels[1].Load("/Users/daniel/CodeManager/BreakOutGame/BreakOutGame/levels/two.lvl", this->Width, this->Height * 0.5f);
     else if (this->Level == 2)
-        this->Levels[2].Load("levels/three.lvl", this->Width, this->Height * 0.5f);
+        this->Levels[2].Load("/Users/daniel/CodeManager/BreakOutGame/BreakOutGame/levels/three.lvl", this->Width, this->Height * 0.5f);
     else if (this->Level == 3)
-        this->Levels[3].Load("levels/four.lvl", this->Width, this->Height * 0.5f);
+        this->Levels[3].Load("/Users/daniel/CodeManager/BreakOutGame/BreakOutGame/levels/four.lvl", this->Width, this->Height * 0.5f);
 }
 
 void Game::ResetPlayer()

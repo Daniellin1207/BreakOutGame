@@ -19,6 +19,7 @@
 		65D4F81422DCC8AB0017B9D0 /* game_object.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 65D4F81222DCC8AB0017B9D0 /* game_object.cpp */; };
 		65D4F81722DCCB420017B9D0 /* game_level.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 65D4F81522DCCB420017B9D0 /* game_level.cpp */; };
 		65E392B622DE057900E1E734 /* ball_object_collisions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 65E392B422DE057900E1E734 /* ball_object_collisions.cpp */; };
+		65E392BA22DF2F7300E1E734 /* particle_generator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 65E392B822DF2F7300E1E734 /* particle_generator.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -66,6 +67,10 @@
 		65E392B422DE057900E1E734 /* ball_object_collisions.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ball_object_collisions.cpp; sourceTree = "<group>"; };
 		65E392B522DE057900E1E734 /* ball_object_collisions.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ball_object_collisions.hpp; sourceTree = "<group>"; };
 		65E392B722DE07BF00E1E734 /* awesomeface.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = awesomeface.png; sourceTree = "<group>"; };
+		65E392B822DF2F7300E1E734 /* particle_generator.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = particle_generator.cpp; sourceTree = "<group>"; };
+		65E392B922DF2F7300E1E734 /* particle_generator.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = particle_generator.hpp; sourceTree = "<group>"; };
+		65E392BB22DF322800E1E734 /* particle.vs */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = particle.vs; sourceTree = "<group>"; };
+		65E392BC22DF323F00E1E734 /* particle.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = particle.frag; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -123,6 +128,8 @@
 				65D4F81622DCCB420017B9D0 /* game_level.hpp */,
 				65E392B422DE057900E1E734 /* ball_object_collisions.cpp */,
 				65E392B522DE057900E1E734 /* ball_object_collisions.hpp */,
+				65E392B822DF2F7300E1E734 /* particle_generator.cpp */,
+				65E392B922DF2F7300E1E734 /* particle_generator.hpp */,
 			);
 			path = BreakOutGame;
 			sourceTree = "<group>";
@@ -142,6 +149,8 @@
 			children = (
 				65D4F80C22DCBA7A0017B9D0 /* sprite.vs */,
 				65D4F80D22DCBAA00017B9D0 /* sprite.frag */,
+				65E392BB22DF322800E1E734 /* particle.vs */,
+				65E392BC22DF323F00E1E734 /* particle.frag */,
 			);
 			path = shaders;
 			sourceTree = "<group>";
@@ -227,6 +236,7 @@
 				65D4F81722DCCB420017B9D0 /* game_level.cpp in Sources */,
 				65D4F81422DCC8AB0017B9D0 /* game_object.cpp in Sources */,
 				65D4F80022DB4AA30017B9D0 /* shader.cpp in Sources */,
+				65E392BA22DF2F7300E1E734 /* particle_generator.cpp in Sources */,
 				65E392B622DE057900E1E734 /* ball_object_collisions.cpp in Sources */,
 				65D4F80A22DCB9240017B9D0 /* sprite_renderer.cpp in Sources */,
 				65D4F80322DB4DF00017B9D0 /* texture.cpp in Sources */,
