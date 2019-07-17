@@ -21,7 +21,9 @@
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-
+//#include <iostream>
+//#include <irrKlang.h>
+//using namespace irrklang;
 
 // Represents the current state of the game
 enum GameState {

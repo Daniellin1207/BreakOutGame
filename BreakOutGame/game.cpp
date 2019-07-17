@@ -10,6 +10,7 @@ PostProcessor   *Effects;
 
 GLfloat ShakeTime = 0.0f;
 
+//ISoundEngine *SoundEngine = createIrrKlangDevice();
 
 Game::Game(GLuint width, GLuint height)
 : State(GAME_ACTIVE), Keys(), Width(width), Height(height)
@@ -79,6 +80,8 @@ void Game::Init()
     //Effects->Shake = GL_TRUE;
     //Effects->Confuse = GL_TRUE;
     //Effects->Chaos = GL_TRUE;
+    
+//    SoundEngine->play2D("/Users/daniel/CodeManager/BreakOutGame/BreakOutGame/audio/breakout.mp3", GL_TRUE);
 }
 
 void Game::Update(GLfloat dt)

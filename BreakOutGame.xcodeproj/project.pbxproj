@@ -115,6 +115,7 @@
 		6536945522DB01EA002F5429 /* BreakOutGame */ = {
 			isa = PBXGroup;
 			children = (
+				65E392C722DF557000E1E734 /* audio */,
 				65D4F81822DCCBE20017B9D0 /* levels */,
 				65D4F80E22DCBB6E0017B9D0 /* textures */,
 				65D4F80B22DCBA1E0017B9D0 /* shaders */,
@@ -189,6 +190,13 @@
 				65D4F81C22DCCC290017B9D0 /* four.lvl */,
 			);
 			path = levels;
+			sourceTree = "<group>";
+		};
+		65E392C722DF557000E1E734 /* audio */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = audio;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -384,6 +392,7 @@
 				HEADER_SEARCH_PATHS = (
 					/usr/local/Cellar/glew/2.1.0/include,
 					/usr/local/Cellar/glfw/3.3/include,
+					"/Users/daniel/CodeManager/irrKlang-64bit-1.5.0/irrKlang-64bit-1.5.0/include",
 					/Users/daniel/CodeManager/glm,
 				);
 				LIBRARY_SEARCH_PATHS = (
@@ -403,6 +412,7 @@
 				HEADER_SEARCH_PATHS = (
 					/usr/local/Cellar/glew/2.1.0/include,
 					/usr/local/Cellar/glfw/3.3/include,
+					"/Users/daniel/CodeManager/irrKlang-64bit-1.5.0/irrKlang-64bit-1.5.0/include",
 					/Users/daniel/CodeManager/glm,
 				);
 				LIBRARY_SEARCH_PATHS = (
